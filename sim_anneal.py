@@ -8,6 +8,7 @@ import matplotlib as mpl
 from brachiation_calc import rheo_calc
 import collections
 from random import random
+import time
 
 ####################################################
 # Simulated Annealing Functions
@@ -27,7 +28,10 @@ def sum_squared(curr_params,const_param,X_train):
         p0[i] = curr_params[param_list[i]]
     G11_exp = X_train[0]
     G12_exp = X_train[1]
-    output1 = rheo_calc(p0[0],p0[1],p0[2],p0[3],p0[4],p0[5],const_param[0],const_param[2],const_param[1],plot_calc=False,plot_calc_all=False,print_on=False)
+    #output1 = rheo_calc(p0[0],p0[1],p0[2],p0[3],p0[4],p0[5],const_param[0],const_param[2],const_param[1],plot_calc=False,plot_calc_all=False,print_on=False)
+    t = time.time()
+    output1 = rheo_calc(const_param[5],p0[0],p0[1],p0[2],const_param[3],const_param[4],const_param[0],const_param[2],const_param[1],plot_calc=False,plot_calc_all=False,print_on=False)
+    print(time.time()-t)
     SSE1 = np.sum(np.float_power(np.log(np.real(output1[1]))-np.log(G11_exp),2.)) 
     SSE2 = np.sum(np.float_power(np.log(np.imag(output1[1]))-np.log(G12_exp),2.)) 
     SSE = SSE1 + SSE2
@@ -125,7 +129,7 @@ def simul_anneal(param_dict,const_param,X_train,fn_train,maxiters=100,alpha=0.85
 t = []
 g1 = []
 g2 = []
-with open('data.csv','r') as csvfile:
+with open('data-abby-pegpla.csv','r',encoding='utf-8-sig') as csvfile:
     spamreader = csv.reader(csvfile)
     for row in spamreader:
         t.append(float(row[0]))
@@ -140,15 +144,18 @@ g2 = np.array(g2)
 ####################################################
 
 param_dict = collections.OrderedDict()
-param_dict['conc'] = np.array([0.4,1.e-1])
-param_dict['x'] = np.array([6.e-10,1.e-1])
-param_dict['ku'] = np.array([1.2,1.e-1])
-param_dict['kb'] = np.array([0.03,1.e-1])
-param_dict['monomers'] = np.array([565,1.e-1])
-param_dict['stickers'] = np.array([360,1.e-1])
+#param_dict['conc'] = np.array([0.4,1.e-1])
+param_dict['x'] = np.array([6.e-10,1.e-1]) #drag coef
+param_dict['ku'] = np.array([1e4,1.e-1])
+param_dict['kb'] = np.array([0.1,1.e-1])
+#param_dict['monomers'] = np.array([565,1.e-1])
+#param_dict['stickers'] = np.array([360,1.e-1])
 P = 500
 T = 25.
-const_param = [P,T,t]
+monomers = 4500.
+stickers = 450.
+c = .0000435
+const_param = [P,T,t,monomers,stickers,c] #probably want to add conc,monomers,and stickers (NE)
 
 X_train = []
 X_train.append(g1)
