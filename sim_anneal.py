@@ -83,9 +83,15 @@ def simul_anneal(param_dict,const_param,X_train,fn_train,maxiters=100,alpha=0.85
     T_desc = int(maxiters*2.) # never drop to exponential
 
     for i in range(maxiters):
-        print('Starting Iteration {}'.format(i))
+        t = time.time()
         curr_params = choose_params(param_dict, prev_params)
-        print(curr_params)
+        #print(curr_params)
+        #write curr_params to file
+        with open('outprms.txt','w') as w:
+            w.write(str(i)+'\n')
+            for k in curr_params:
+                w.write(k + str(curr_params[k])+' ')
+            w.write('\n')
         metric, model = fn_train(curr_params, const_param, X_train)
         if metric < prev_metric:
             print('Local Improvement in metric from {:8.4f} to {:8.4f} '.format(prev_metric, metric) + ' - parameters accepted')
@@ -129,7 +135,7 @@ def simul_anneal(param_dict,const_param,X_train,fn_train,maxiters=100,alpha=0.85
 t = []
 g1 = []
 g2 = []
-with open('data-abby-pegpla.csv','r',encoding='utf-8-sig') as csvfile:
+with open('data-abby-pegpla-downs.csv','r',encoding='utf-8-sig') as csvfile:
     spamreader = csv.reader(csvfile)
     for row in spamreader:
         t.append(float(row[0]))
